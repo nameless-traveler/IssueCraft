@@ -1,7 +1,7 @@
-/**
+﻿/**
  * logger.js
- * Lightweight structured logger for the AI Issue Enhancer pipeline.
- * Outputs timestamped, levelled log lines to stdout/stderr.
+ * Lightweight structured logger for the IssueCraft pipeline.
+ * Outputs timestamped, leveled log lines to stdout/stderr.
  */
 
 const config = require('./config');
@@ -32,12 +32,11 @@ function log(level, message, meta) {
 
 const logger = {
   debug: (msg, meta) => log('debug', msg, meta),
-  info:  (msg, meta) => log('info',  msg, meta),
-  warn:  (msg, meta) => log('warn',  msg, meta),
+  info: (msg, meta) => log('info', msg, meta),
+  warn: (msg, meta) => log('warn', msg, meta),
   error: (msg, meta) => log('error', msg, meta),
 
-  // ─── Named pipeline events ───────────────────────────────────────────────
-  issueReceived:   (issueNumber, title) =>
+  issueReceived: (issueNumber, title) =>
     log('info', `Issue received: #${issueNumber}`, { title }),
 
   promptGenerated: (length) =>

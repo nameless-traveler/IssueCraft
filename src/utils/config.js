@@ -1,35 +1,41 @@
-/**
+﻿/**
  * config.js
- * Central configuration for the AI Issue Enhancer.
- * All tuneable parameters live here — import this instead of hardcoding values.
+ * Central configuration for IssueCraft.
+ * All tuneable parameters live here; import this instead of hardcoding values.
  */
 
+function readInputOrEnv(inputName, envName) {
+  const inputKeyLegacy = `INPUT_${inputName}`;
+  const inputKeyUnderscore = `INPUT_${inputName.replace(/-/g, '_')}`;
+  return process.env[envName]
+    || process.env[inputKeyUnderscore]
+    || process.env[inputKeyLegacy];
+}
+
 const config = {
-  // ─── OpenAI ───────────────────────────────────────────────────────────────
   openai: {
-    model: process.env.OPENAI_MODEL || 'gpt-4o',
+    model: readInputOrEnv('OPENAI-MODEL', 'OPENAI_MODEL') || 'gpt-4o-mini',
+    apiKey: readInputOrEnv('OPENAI-API-KEY', 'OPENAI_API_KEY'),
     temperature: 0.2,
     maxTokens: 1024,
     retryAttempts: 3,
     retryDelayMs: 1500,
+    timeoutMs: 15000,
   },
 
-  // ─── Prompt ───────────────────────────────────────────────────────────────
   prompt: {
     version: '1.0.0',
     templatePath: 'prompts/issue-enhancement.txt',
   },
 
-  // ─── GitHub ───────────────────────────────────────────────────────────────
   github: {
     apiBase: 'https://api.github.com',
-    token: process.env.GITHUB_TOKEN,
+    token: readInputOrEnv('GITHUB-TOKEN', 'GITHUB_TOKEN'),
     eventPath: process.env.GITHUB_EVENT_PATH,
   },
 
-  // ─── Logging ──────────────────────────────────────────────────────────────
   logging: {
-    level: process.env.LOG_LEVEL || 'info', // 'debug' | 'info' | 'warn' | 'error'
+    level: readInputOrEnv('LOG-LEVEL', 'LOG_LEVEL') || 'info', // 'debug' | 'info' | 'warn' | 'error'
   },
 };
 

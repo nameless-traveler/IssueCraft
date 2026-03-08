@@ -8,7 +8,7 @@ const https   = require('https');
 const config  = require('../utils/config');
 const logger  = require('../utils/logger');
 
-const { model, temperature, maxTokens, retryAttempts, retryDelayMs } =
+const { model, temperature, maxTokens, retryAttempts, retryDelayMs, timeoutMs } =
   config.openai;
 
 /**
@@ -19,10 +19,12 @@ const { model, temperature, maxTokens, retryAttempts, retryDelayMs } =
  * @throws {Error} after all retry attempts are exhausted.
  */
 async function callOpenAI(prompt) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = config.openai.apiKey;
   if (!apiKey) {
-    throw new Error('OPENAI_API_KEY environment variable is not set.');
+    throw new Error('OpenAI API key not provided. Set OPENAI_API_KEY or action input openai-api-key.');
   }
+  // Mask key in GitHub Actions logs to prevent accidental exposure.
+  process.stdout.write(`::add-mask::${apiKey}\n`);
 
   const requestBody = JSON.stringify({
     model,
@@ -48,7 +50,7 @@ async function callOpenAI(prompt) {
       lastError = err;
 
       if (attempt < retryAttempts) {
-        const delay = retryDelayMs * attempt; // simple linear back-off
+        const delay = retryDelayMs * Math.pow(2, attempt - 1); // exponential back-off
         logger.retrying(attempt, retryAttempts, err.message);
         await sleep(delay);
       }
@@ -104,6 +106,9 @@ function makeRequest(body, apiKey) {
     });
 
     req.on('error', reject);
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`OpenAI request timed out after ${timeoutMs}ms`));
+    });
     req.write(body);
     req.end();
   });

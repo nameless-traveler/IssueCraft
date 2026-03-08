@@ -8,8 +8,8 @@ branding:
 
 inputs:
   openai-api-key:
-    description: 'OpenAI API key for calling the LLM'
-    required: true
+    description: 'OpenAI API key for calling the LLM (optional if OPENAI_API_KEY env var is set)'
+    required: false
 
   github-token:
     description: 'GitHub token with issues: write permission'
@@ -19,7 +19,7 @@ inputs:
   openai-model:
     description: 'OpenAI model to use for analysis'
     required: false
-    default: 'gpt-4o'
+    default: 'gpt-4o-mini'
 
   log-level:
     description: 'Logging verbosity: debug | info | warn | error'

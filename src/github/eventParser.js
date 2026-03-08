@@ -26,7 +26,7 @@ function parseEvent() {
 
   if (!eventPath) {
     throw new Error(
-      'GITHUB_EVENT_PATH is not set. Are you running inside a GitHub Actions runner?'
+      'GITHUB_EVENT_PATH not set. Action must run on issue events.'
     );
   }
 

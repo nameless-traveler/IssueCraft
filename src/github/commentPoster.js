@@ -1,4 +1,4 @@
-/**
+﻿/**
  * commentPoster.js
  * Posts the AI-enhanced issue as a bot comment via the GitHub REST API.
  */
@@ -53,7 +53,7 @@ function makeRequest(path, body, token) {
         'Content-Length': Buffer.byteLength(body),
         'Authorization':  `Bearer ${token}`,
         'Accept':         'application/vnd.github+json',
-        'User-Agent':     'ai-issue-enhancer/1.0.0',
+        'User-Agent':     'issuecraft/1.0.0',
         'X-GitHub-Api-Version': '2022-11-28',
       },
     };
@@ -85,3 +85,4 @@ function makeRequest(path, body, token) {
 }
 
 module.exports = { postComment };
+

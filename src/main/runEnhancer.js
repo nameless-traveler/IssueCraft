@@ -1,24 +1,24 @@
-/**
+﻿/**
  * runEnhancer.js
- * Main orchestrator — drives the entire AI Issue Enhancer pipeline.
+ * Main orchestrator; drives the entire IssueCraft pipeline.
  *
  * Pipeline:
- *   GitHub Event → eventParser → promptBuilder → openaiClient
- *               → responseParser → markdownFormatter → commentPoster
+ *   GitHub Event -> eventParser -> promptBuilder -> openaiClient
+ *               -> responseParser -> markdownFormatter -> commentPoster
  */
 
-const { parseEvent }    = require('../github/eventParser');
-const { postComment }   = require('../github/commentPoster');
-const { buildPrompt }   = require('../ai/promptBuilder');
-const { callOpenAI }    = require('../ai/openaiClient');
+const { parseEvent } = require('../github/eventParser');
+const { postComment } = require('../github/commentPoster');
+const { buildPrompt } = require('../ai/promptBuilder');
+const { callOpenAI } = require('../ai/openaiClient');
 const { parseResponse } = require('../ai/responseParser');
 const { formatComment } = require('../formatter/markdownFormatter');
-const logger            = require('../utils/logger');
+const logger = require('../utils/logger');
 
 async function run() {
-  logger.info('AI Issue Enhancer pipeline starting…');
+  logger.info('IssueCraft pipeline starting...');
 
-  // ── Step 1: Parse the GitHub event ───────────────────────────────────────
+  // Step 1: Parse the GitHub event
   let issueData;
   try {
     issueData = parseEvent();
@@ -27,7 +27,7 @@ async function run() {
     process.exit(1);
   }
 
-  // ── Step 2: Build the AI prompt ───────────────────────────────────────────
+  // Step 2: Build the AI prompt
   let prompt;
   try {
     prompt = buildPrompt(issueData);
@@ -36,7 +36,7 @@ async function run() {
     process.exit(1);
   }
 
-  // ── Step 3: Call the OpenAI API ───────────────────────────────────────────
+  // Step 3: Call the OpenAI API
   let rawResponse;
   try {
     rawResponse = await callOpenAI(prompt);
@@ -45,7 +45,7 @@ async function run() {
     process.exit(1);
   }
 
-  // ── Step 4: Parse and validate the AI response ────────────────────────────
+  // Step 4: Parse and validate the AI response
   let parsedResponse;
   try {
     parsedResponse = parseResponse(rawResponse);
@@ -55,7 +55,7 @@ async function run() {
     process.exit(1);
   }
 
-  // ── Step 5: Format as markdown ────────────────────────────────────────────
+  // Step 5: Format as markdown
   let markdownComment;
   try {
     markdownComment = formatComment(parsedResponse);
@@ -64,7 +64,7 @@ async function run() {
     process.exit(1);
   }
 
-  // ── Step 6: Post the comment to GitHub ────────────────────────────────────
+  // Step 6: Post the comment to GitHub
   try {
     await postComment(
       issueData.repoOwner,
@@ -77,7 +77,7 @@ async function run() {
     process.exit(1);
   }
 
-  logger.info('AI Issue Enhancer pipeline completed successfully.');
+  logger.info('IssueCraft pipeline completed successfully.');
 }
 
 run();
