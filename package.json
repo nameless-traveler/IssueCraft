@@ -1,0 +1,22 @@
+{
+  "name": "issuecraft",
+  "version": "1.0.0",
+  "description": "IssueCraft improves GitHub issues by rewriting them into clear, structured reports for developers.",
+  "main": "src/main/runEnhancer.js",
+  "scripts": {
+    "start": "node src/main/runEnhancer.js",
+    "test": "node --test tests/"
+  },
+  "keywords": [
+    "github-action",
+    "ai",
+    "openai",
+    "issues",
+    "triage",
+    "llm"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "MIT"
+}

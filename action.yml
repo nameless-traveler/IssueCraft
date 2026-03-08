@@ -1,0 +1,31 @@
+name: 'IssueCraft'
+description: 'Improves GitHub issues by rewriting them into clear, structured reports for developers.'
+author: 'nameless-traveler'
+
+branding:
+  icon: 'zap'
+  color: 'purple'
+
+inputs:
+  openai-api-key:
+    description: 'OpenAI API key for calling the LLM'
+    required: true
+
+  github-token:
+    description: 'GitHub token with issues: write permission'
+    required: true
+    default: ${{ github.token }}
+
+  openai-model:
+    description: 'OpenAI model to use for analysis'
+    required: false
+    default: 'gpt-4o'
+
+  log-level:
+    description: 'Logging verbosity: debug | info | warn | error'
+    required: false
+    default: 'info'
+
+runs:
+  using: 'node20'
+  main: 'src/main/runEnhancer.js'

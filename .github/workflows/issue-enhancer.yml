@@ -1,0 +1,38 @@
+name: AI Issue Enhancer
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  enhance-issue:
+    name: Enhance GitHub Issue with AI
+    runs-on: ubuntu-latest
+
+    # Only run when the issue was NOT created by a bot (prevents comment loops)
+    if: ${{ !contains(github.actor, '[bot]') }}
+
+    permissions:
+      issues: write     # required to post the bot comment
+      contents: read    # required to checkout the repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run AI Issue Enhancer
+        env:
+          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          LOG_LEVEL:         info
+        run: node src/main/runEnhancer.js
