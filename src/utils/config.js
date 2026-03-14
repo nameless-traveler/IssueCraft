@@ -25,7 +25,7 @@ const config = {
 
   prompt: {
     version: '1.0.0',
-    templatePath: 'prompts/issue-enhancement.txt',
+    templatePath: 'prompts/issue-enhancement.md',
   },
 
   github: {

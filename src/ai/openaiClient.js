@@ -11,10 +11,17 @@ const logger  = require('../utils/logger');
 const { model, temperature, maxTokens, retryAttempts, retryDelayMs, timeoutMs } =
   config.openai;
 
+const SYSTEM_INSTRUCTIONS = [
+  'You are an expert software engineer and GitHub issue triage assistant.',
+  'Follow the user instructions exactly.',
+  'Return only valid JSON that matches the required schema.',
+  'Do not add markdown, prose, or code fences.',
+].join(' ');
+
 /**
  * Calls the OpenAI Chat Completions API with the given prompt.
  *
- * @param {string} prompt - The fully-built prompt string.
+ * @param {string} prompt - The user prompt containing task requirements and issue data.
  * @returns {Promise<string>} Raw text content of the AI response.
  * @throws {Error} after all retry attempts are exhausted.
  */
@@ -31,6 +38,10 @@ async function callOpenAI(prompt) {
     temperature,
     max_tokens: maxTokens,
     messages: [
+      {
+        role:    'system',
+        content: SYSTEM_INSTRUCTIONS,
+      },
       {
         role:    'user',
         content: prompt,

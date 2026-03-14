@@ -183,7 +183,7 @@ issuecraft/
 |       |-- config.js
 |       `-- logger.js
 |-- prompts/
-|   `-- issue-enhancement.txt
+|   `-- issue-enhancement.md
 |-- examples/
 |   |-- messy_issue_example.md
 |   `-- expected_output_example.md
