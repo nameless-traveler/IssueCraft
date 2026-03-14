@@ -116,6 +116,8 @@ Gemini:
 - `with.ai-provider: gemini`
 - API key via `env.GEMINI_API_KEY` or input `gemini-api-key`
 - model via `env.GEMINI_MODEL` or input `gemini-model`
+- retry attempts via `env.GEMINI_RETRY_ATTEMPTS` or input `gemini-retry-attempts`
+- retry base delay via `env.GEMINI_RETRY_DELAY_MS` or input `gemini-retry-delay-ms`
 
 Gemini workflow example:
 
@@ -136,6 +138,8 @@ jobs:
       - uses: nameless-traveler/issuecraft@v1
         with:
           ai-provider: gemini
+          gemini-retry-attempts: 5
+          gemini-retry-delay-ms: 5000
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 ```
@@ -177,8 +181,8 @@ Settings are defined in [`src/utils/config.js`](./src/utils/config.js).
 | `gemini.apiBase` | `/v1beta` | Gemini API base path (override with `GEMINI_API_BASE`) |
 | `gemini.temperature` | `0.2` | Lower values produce more consistent output |
 | `gemini.maxTokens` | `1024` | Max tokens in Gemini model response |
-| `gemini.retryAttempts` | `3` | Retry attempts for failed Gemini API calls |
-| `gemini.retryDelayMs` | `1500` | Base delay for retry backoff in ms |
+| `gemini.retryAttempts` | `3` | Retry attempts for failed Gemini API calls (override with `GEMINI_RETRY_ATTEMPTS` or input `gemini-retry-attempts`) |
+| `gemini.retryDelayMs` | `1500` | Base delay for retry backoff in ms (override with `GEMINI_RETRY_DELAY_MS` or input `gemini-retry-delay-ms`) |
 | `gemini.timeoutMs` | `15000` | Request timeout for Gemini API calls in ms |
 | `prompt.version` | `1.0.0` | Version shown in comment footer |
 

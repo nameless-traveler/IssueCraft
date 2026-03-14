@@ -35,11 +35,21 @@ inputs:
     required: false
     default: 'gemini-2.0-flash'
 
+  gemini-retry-attempts:
+    description: 'Retry attempts for Gemini API calls'
+    required: false
+    default: '3'
+
+  gemini-retry-delay-ms:
+    description: 'Base delay in milliseconds for Gemini retry backoff'
+    required: false
+    default: '1500'
+
   log-level:
     description: 'Logging verbosity: debug | info | warn | error'
     required: false
     default: 'info'
 
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'src/main/runEnhancer.js'

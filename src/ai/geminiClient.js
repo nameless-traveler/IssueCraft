@@ -66,7 +66,9 @@ async function callGemini(prompt) {
     } catch (err) {
       lastError = err;
       if (attempt < retryAttempts) {
-        const delay = retryDelayMs * Math.pow(2, attempt - 1); // exponential back-off
+        const exponential = retryDelayMs * Math.pow(2, attempt - 1);
+        const jitter = Math.floor(Math.random() * 500);
+        const delay = Math.max(exponential + jitter, err.retryAfterMs || 0);
         logger.retrying(attempt, retryAttempts, err.message);
         await sleep(delay);
       }
@@ -100,6 +102,8 @@ function makeRequest(body, apiKey) {
       let data = '';
       res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
+        const retryAfterMs = parseRetryAfterMs(res.headers['retry-after']);
+
         if (res.statusCode >= 200 && res.statusCode < 300) {
           try {
             const parsed = JSON.parse(data);
@@ -120,7 +124,12 @@ function makeRequest(body, apiKey) {
           }
         } else if (res.statusCode === 429 || res.statusCode >= 500) {
           // Retriable status codes
-          reject(new Error(`Gemini returned status ${res.statusCode} (retriable)`));
+          const apiMessage = extractApiErrorMessage(data);
+          const err = new Error(
+            `Gemini returned status ${res.statusCode} (retriable)${apiMessage ? `: ${apiMessage}` : ''}`
+          );
+          err.retryAfterMs = retryAfterMs;
+          reject(err);
         } else {
           // Non-retriable (e.g. 401, 400) — surface immediately
           reject(new Error(`Gemini returned status ${res.statusCode}: ${data}`));
@@ -135,6 +144,30 @@ function makeRequest(body, apiKey) {
     req.write(body);
     req.end();
   });
+}
+
+function parseRetryAfterMs(retryAfterHeader) {
+  if (!retryAfterHeader) return 0;
+
+  const headerValue = Array.isArray(retryAfterHeader) ? retryAfterHeader[0] : retryAfterHeader;
+  const seconds = Number(headerValue);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.floor(seconds * 1000);
+  }
+
+  const dateMs = Date.parse(headerValue);
+  if (Number.isNaN(dateMs)) return 0;
+
+  return Math.max(0, dateMs - Date.now());
+}
+
+function extractApiErrorMessage(rawBody) {
+  try {
+    const parsed = JSON.parse(rawBody);
+    return parsed?.error?.message || '';
+  } catch {
+    return '';
+  }
 }
 
 function sleep(ms) {
