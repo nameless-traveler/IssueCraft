@@ -13,9 +13,24 @@ function readInputOrEnv(inputName, envName) {
 }
 
 const config = {
+  ai: {
+    provider: String(readInputOrEnv('AI-PROVIDER', 'AI_PROVIDER') || 'openai').trim().toLowerCase(),
+  },
+
   openai: {
     model: readInputOrEnv('OPENAI-MODEL', 'OPENAI_MODEL') || 'gpt-4o-mini',
     apiKey: readInputOrEnv('OPENAI-API-KEY', 'OPENAI_API_KEY'),
+    temperature: 0.2,
+    maxTokens: 1024,
+    retryAttempts: 3,
+    retryDelayMs: 1500,
+    timeoutMs: 15000,
+  },
+
+  gemini: {
+    model: readInputOrEnv('GEMINI-MODEL', 'GEMINI_MODEL') || 'gemini-2.0-flash',
+    apiKey: readInputOrEnv('GEMINI-API-KEY', 'GEMINI_API_KEY'),
+    apiBase: readInputOrEnv('GEMINI-API-BASE', 'GEMINI_API_BASE') || '/v1beta',
     temperature: 0.2,
     maxTokens: 1024,
     retryAttempts: 3,

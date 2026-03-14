@@ -3,14 +3,14 @@
  * Main orchestrator; drives the entire IssueCraft pipeline.
  *
  * Pipeline:
- *   GitHub Event -> eventParser -> promptBuilder -> openaiClient
+ *   GitHub Event -> eventParser -> promptBuilder -> aiClient
  *               -> responseParser -> markdownFormatter -> commentPoster
  */
 
 const { parseEvent } = require('../github/eventParser');
 const { postComment } = require('../github/commentPoster');
 const { buildPrompt } = require('../ai/promptBuilder');
-const { callOpenAI } = require('../ai/openaiClient');
+const { callAI } = require('../ai/aiClient');
 const { parseResponse } = require('../ai/responseParser');
 const { formatComment } = require('../formatter/markdownFormatter');
 const logger = require('../utils/logger');
@@ -36,12 +36,12 @@ async function run() {
     process.exit(1);
   }
 
-  // Step 3: Call the OpenAI API
+  // Step 3: Call the configured AI provider API
   let rawResponse;
   try {
-    rawResponse = await callOpenAI(prompt);
+    rawResponse = await callAI(prompt);
   } catch (err) {
-    logger.pipelineError('openaiClient', err);
+    logger.pipelineError('aiClient', err);
     process.exit(1);
   }
 

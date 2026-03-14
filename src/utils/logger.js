@@ -42,8 +42,8 @@ const logger = {
   promptGenerated: (length) =>
     log('info', 'Prompt generated', { characters: length }),
 
-  apiCallSent: (model) =>
-    log('info', 'OpenAI API call sent', { model }),
+  apiCallSent: (provider, model) =>
+    log('info', 'AI API call sent', { provider, model }),
 
   responseReceived: (issueType) =>
     log('info', 'AI response received and parsed', { issue_type: issueType }),

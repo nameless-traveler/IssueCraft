@@ -16,7 +16,7 @@ The action does not modify the original issue. It only adds a comment.
 
 1. A new issue is opened
 2. IssueCraft reads the title and body from the GitHub event
-3. The issue text is analyzed using the configured OpenAI model
+3. The issue text is analyzed using the configured AI provider/model
 4. IssueCraft posts a structured summary as a comment
 
 ---
@@ -69,7 +69,9 @@ See [`examples/`](./examples) for complete sample input/output.
 ## Requirements
 
 - A GitHub repository with GitHub Actions enabled
-- An OpenAI API key
+- An API key for at least one supported provider:
+  - OpenAI (`OPENAI_API_KEY`)
+  - Gemini (`GEMINI_API_KEY`)
 
 ---
 
@@ -94,6 +96,8 @@ jobs:
 
     steps:
       - uses: nameless-traveler/issuecraft@v1
+        with:
+          ai-provider: openai
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 ```
@@ -101,20 +105,56 @@ jobs:
 `@v1` always points to the latest stable v1 release.
 Pin to `@v1.0.0` if you need a fixed build.
 
-IssueCraft accepts the API key from either:
-- `env.OPENAI_API_KEY`
-- action input `openai-api-key`
+IssueCraft accepts provider and credentials from workflow `with` inputs and environment variables.
 
-### 2. Add your API key secret
+OpenAI:
+- `with.ai-provider: openai` (default)
+- API key via `env.OPENAI_API_KEY` or input `openai-api-key`
+- model via `env.OPENAI_MODEL` or input `openai-model`
+
+Gemini:
+- `with.ai-provider: gemini`
+- API key via `env.GEMINI_API_KEY` or input `gemini-api-key`
+- model via `env.GEMINI_MODEL` or input `gemini-model`
+
+Gemini workflow example:
+
+```yaml
+name: IssueCraft
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  enhance-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - uses: nameless-traveler/issuecraft@v1
+        with:
+          ai-provider: gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+```
+
+### 2. Add provider API key secret
 
 In your repository, go to:
 
 `Settings -> Secrets and variables -> Actions -> New repository secret`
 
-Create:
+Create one of:
 
 - Name: `OPENAI_API_KEY`
 - Value: your OpenAI API key
+
+or
+
+- Name: `GEMINI_API_KEY`
+- Value: your Gemini API key
 
 `github-token` is optional in workflow YAML because the action defaults it to `github.token`.
 
@@ -126,12 +166,20 @@ Settings are defined in [`src/utils/config.js`](./src/utils/config.js).
 
 | Setting | Default | Description |
 |---|---|---|
+| `ai.provider` | `openai` | AI provider used for analysis (`openai` or `gemini`) |
 | `openai.model` | `gpt-4o-mini` | Model used for analysis (override with `OPENAI_MODEL` or input `openai-model`) |
 | `openai.temperature` | `0.2` | Lower values produce more consistent output |
 | `openai.maxTokens` | `1024` | Max tokens in model response |
 | `openai.retryAttempts` | `3` | Retry attempts for failed API calls |
 | `openai.retryDelayMs` | `1500` | Base delay for retry backoff in ms |
 | `openai.timeoutMs` | `15000` | Request timeout for OpenAI API calls in ms |
+| `gemini.model` | `gemini-2.0-flash` | Model used for Gemini analysis (override with `GEMINI_MODEL` or input `gemini-model`) |
+| `gemini.apiBase` | `/v1beta` | Gemini API base path (override with `GEMINI_API_BASE`) |
+| `gemini.temperature` | `0.2` | Lower values produce more consistent output |
+| `gemini.maxTokens` | `1024` | Max tokens in Gemini model response |
+| `gemini.retryAttempts` | `3` | Retry attempts for failed Gemini API calls |
+| `gemini.retryDelayMs` | `1500` | Base delay for retry backoff in ms |
+| `gemini.timeoutMs` | `15000` | Request timeout for Gemini API calls in ms |
 | `prompt.version` | `1.0.0` | Version shown in comment footer |
 
 Use `LOG_LEVEL=debug` for verbose logs.
@@ -144,7 +192,7 @@ IssueCraft is designed to be safe to run in standard issue workflows.
 
 It does:
 - Read issue title/body from the GitHub event payload
-- Send the issue text to the configured OpenAI model
+- Send the issue text to the configured AI provider model
 - Post one structured comment on the issue
 
 It does not:
@@ -175,6 +223,8 @@ issuecraft/
 |   |   `-- commentPoster.js
 |   |-- ai/
 |   |   |-- promptBuilder.js
+|   |   |-- aiClient.js
+|   |   |-- geminiClient.js
 |   |   |-- openaiClient.js
 |   |   `-- responseParser.js
 |   |-- formatter/
