@@ -35,7 +35,7 @@ const config = {
   },
 
   gemini: {
-    model: readInputOrEnv('GEMINI-MODEL', 'GEMINI_MODEL') || 'gemini-2.0-flash',
+    model: readInputOrEnv('GEMINI-MODEL', 'GEMINI_MODEL') || 'gemini-2.5-flash',
     apiKey: readInputOrEnv('GEMINI-API-KEY', 'GEMINI_API_KEY'),
     apiBase: readInputOrEnv('GEMINI-API-BASE', 'GEMINI_API_BASE') || '/v1beta',
     temperature: readNumberInputOrEnv('GEMINI-TEMPERATURE', 'GEMINI_TEMPERATURE', 0.2),

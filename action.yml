@@ -33,7 +33,7 @@ inputs:
   gemini-model:
     description: 'Gemini model to use for analysis'
     required: false
-    default: 'gemini-2.0-flash'
+    default: 'gemini-2.5-flash'
 
   gemini-retry-attempts:
     description: 'Retry attempts for Gemini API calls'

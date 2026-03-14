@@ -105,6 +105,11 @@ jobs:
 `@v1` always points to the latest stable v1 release.
 Pin to `@v1.0.0` if you need a fixed build.
 
+If you see a warning like:
+`Unexpected input(s) 'gemini-retry-attempts', 'gemini-retry-delay-ms'`
+your workflow is using an older action release where those inputs do not exist yet.
+Use a release/tag that includes the new `action.yml` inputs, or repoint the `v1` tag to the latest release.
+
 IssueCraft accepts provider and credentials from workflow `with` inputs and environment variables.
 
 OpenAI:
@@ -177,7 +182,7 @@ Settings are defined in [`src/utils/config.js`](./src/utils/config.js).
 | `openai.retryAttempts` | `3` | Retry attempts for failed API calls |
 | `openai.retryDelayMs` | `1500` | Base delay for retry backoff in ms |
 | `openai.timeoutMs` | `15000` | Request timeout for OpenAI API calls in ms |
-| `gemini.model` | `gemini-2.0-flash` | Model used for Gemini analysis (override with `GEMINI_MODEL` or input `gemini-model`) |
+| `gemini.model` | `gemini-2.5-flash` | Model used for Gemini analysis (override with `GEMINI_MODEL` or input `gemini-model`) |
 | `gemini.apiBase` | `/v1beta` | Gemini API base path (override with `GEMINI_API_BASE`) |
 | `gemini.temperature` | `0.2` | Lower values produce more consistent output |
 | `gemini.maxTokens` | `1024` | Max tokens in Gemini model response |
@@ -187,6 +192,7 @@ Settings are defined in [`src/utils/config.js`](./src/utils/config.js).
 | `prompt.version` | `1.0.0` | Version shown in comment footer |
 
 Use `LOG_LEVEL=debug` for verbose logs.
+Defaults in this table are baseline values; workflow examples may intentionally override them (for example `gemini-retry-attempts: 5`).
 
 ---
 
