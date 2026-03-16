@@ -27,6 +27,7 @@ The action does not modify the original issue. It only adds a comment.
 - Extracts key details from issue text
 - Highlights missing debugging information
 - Suggests useful labels based on context
+- Uses issue-type-specific templates for structured output
 
 ---
 
@@ -193,6 +194,36 @@ Settings are defined in [`src/utils/config.js`](./src/utils/config.js).
 
 Use `LOG_LEVEL=debug` for verbose logs.
 Defaults in this table are baseline values; workflow examples may intentionally override them (for example `gemini-retry-attempts: 5`).
+
+---
+
+## AI Output Schema
+
+IssueCraft expects this top-level JSON format from the model:
+
+```json
+{
+  "issue_type": "",
+  "enhanced_issue": {},
+  "missing_information": [],
+  "suggested_labels": []
+}
+```
+
+`enhanced_issue` fields vary by `issue_type`:
+
+- `bug`: `title`, `summary`, `steps_to_reproduce`, `observed_behavior`, `expected_behavior`
+- `feature_request`: `title`, `summary`, `problem_statement`, `proposed_solution`
+- `documentation`: `title`, `summary`, `affected_docs`, `suggested_change`
+- `performance`: `title`, `summary`, `current_performance`, `expected_performance`, `environment`
+- `improvement`, `ui_ux`, `other`: `title`, `summary`, `observed_behavior`, `expected_behavior`
+
+Validation rules enforced by parser:
+
+- `summary` is limited to 40 words
+- title is prefixed by type when missing (for example `Bug:` / `Feature:` / `Docs:`)
+- `missing_information` is deduplicated and capped at 8 items
+- `suggested_labels` is normalized to lowercase kebab-case, deduplicated, and capped at 5 items
 
 ---
 
