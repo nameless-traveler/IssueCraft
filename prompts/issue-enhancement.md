@@ -94,6 +94,24 @@ Required fields in `enhanced_issue`:
 - Summary must be concise and no more than 40 words.
 - Do not echo the full input issue text in the output.
 
+## Priority Logic
+Determine `priority` based on:
+- severity of the issue
+- how many users are likely affected
+- whether core functionality is blocked
+
+Priority levels:
+- `critical`: must be fixed immediately
+- `high`: should be fixed soon
+- `medium`: normal priority
+- `low`: minor or optional
+
+Severity levels:
+- `critical`
+- `high`
+- `medium`
+- `low`
+
 ## Missing Information
 Identify debugging details not provided but useful for investigation.
 - Return 0 to 8 concise items.
@@ -134,6 +152,8 @@ Use this schema:
 ```json
 {
   "issue_type": "",
+  "priority": "",
+  "severity": "",
   "enhanced_issue": {},
   "missing_information": [],
   "suggested_labels": []

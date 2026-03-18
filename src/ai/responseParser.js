@@ -34,6 +34,8 @@ const TITLE_PREFIX = {
 const SUMMARY_MAX_WORDS = 40;
 const MISSING_INFO_MAX_ITEMS = 8;
 const LABELS_MAX_ITEMS = 5;
+const PRIORITY_LEVELS = ['critical', 'high', 'medium', 'low'];
+const SEVERITY_LEVELS = ['critical', 'high', 'medium', 'low'];
 
 /**
  * Parses the raw AI response string into a validated JS object.
@@ -41,6 +43,8 @@ const LABELS_MAX_ITEMS = 5;
  * @param {string} rawResponse - The raw string returned by the LLM.
  * @returns {{
  *   issue_type: string,
+ *   priority: string,
+ *   severity: string,
  *   enhanced_issue: Record<string, string>,
  *   missing_information: string[],
  *   suggested_labels: string[],
@@ -62,21 +66,41 @@ function parseResponse(rawResponse) {
 
   validateTopLevel(parsed);
   parsed.issue_type = normaliseIssueType(parsed.issue_type);
+  parsed.severity = normaliseSeverity(parsed.severity);
+  parsed.priority = normalisePriority(parsed.priority, parsed.severity);
   parsed.enhanced_issue = normaliseEnhancedIssue(parsed.issue_type, parsed.enhanced_issue);
   parsed.missing_information = normaliseMissingInfo(parsed.missing_information);
-  parsed.suggested_labels = normaliseLabels(parsed.suggested_labels);
+  parsed.suggested_labels = normaliseLabels(parsed.suggested_labels, parsed.priority);
 
   logger.responseReceived(parsed.issue_type);
   return parsed;
 }
 
 function validateTopLevel(parsed) {
-  const topLevelKeys = ['issue_type', 'enhanced_issue', 'missing_information', 'suggested_labels'];
+  const topLevelKeys = ['issue_type', 'priority', 'severity', 'enhanced_issue', 'missing_information', 'suggested_labels'];
   for (const key of topLevelKeys) {
     if (!(key in parsed)) {
       throw new Error(`AI response is missing required top-level field: "${key}"`);
     }
   }
+}
+
+function normaliseSeverity(severityRaw) {
+  const severity = String(severityRaw || '').trim().toLowerCase();
+  if (!SEVERITY_LEVELS.includes(severity)) {
+    logger.warn('Unrecognised severity, defaulting to "medium"', { received: severity });
+    return 'medium';
+  }
+  return severity;
+}
+
+function normalisePriority(priorityRaw, severity) {
+  const priority = String(priorityRaw || '').trim().toLowerCase();
+  if (!PRIORITY_LEVELS.includes(priority)) {
+    logger.warn('Unrecognised priority, deriving from severity', { received: priority, severity });
+    return severity;
+  }
+  return priority;
 }
 
 function normaliseIssueType(issueTypeRaw) {
@@ -155,18 +179,22 @@ function normaliseMissingInfo(missingInfoRaw) {
   return deduped.slice(0, MISSING_INFO_MAX_ITEMS);
 }
 
-function normaliseLabels(labelsRaw) {
+function normaliseLabels(labelsRaw, priority) {
   if (!Array.isArray(labelsRaw)) {
     logger.warn('"suggested_labels" is not an array, defaulting to []');
-    return [];
+    return [`priority-${priority}`];
   }
 
+  const normalized = labelsRaw
+    .filter((item) => typeof item === 'string')
+    .map((item) => item.trim().toLowerCase().replace(/\s+/g, '-'))
+    .map((item) => item.replace(/[^a-z0-9-]/g, ''))
+    .filter(Boolean);
+
+  normalized.push(`priority-${priority}`);
+
   const deduped = dedupeStrings(
-    labelsRaw
-      .filter((item) => typeof item === 'string')
-      .map((item) => item.trim().toLowerCase().replace(/\s+/g, '-'))
-      .map((item) => item.replace(/[^a-z0-9-]/g, ''))
-      .filter(Boolean)
+    normalized
   );
 
   return deduped.slice(0, LABELS_MAX_ITEMS);

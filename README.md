@@ -25,6 +25,7 @@ The action does not modify the original issue. It only adds a comment.
 
 - Rewrites unclear issue titles into something more specific
 - Extracts key details from issue text
+- Assigns `severity` and `priority` for faster triage
 - Highlights missing debugging information
 - Suggests useful labels based on context
 - Uses issue-type-specific templates for structured output
@@ -204,6 +205,8 @@ IssueCraft expects this top-level JSON format from the model:
 ```json
 {
   "issue_type": "",
+  "priority": "",
+  "severity": "",
   "enhanced_issue": {},
   "missing_information": [],
   "suggested_labels": []
@@ -220,13 +223,44 @@ IssueCraft expects this top-level JSON format from the model:
 - `ui_ux`: `title`, `summary`, `current_experience`, `expected_experience`, `user_impact`, `design_reference`
 - `other`: `title`, `summary`, `observed_behavior`, `expected_behavior`
 
+### Simple Priority Logic (LLM-Friendly)
+
+IssueCraft determines priority based on:
+- severity of the issue
+- how many users are likely affected
+- whether core functionality is blocked
+
+Priority levels:
+- `critical` -> must be fixed immediately
+- `high` -> should be fixed soon
+- `medium` -> normal priority
+- `low` -> minor or optional
+
+Example output:
+
+```json
+{
+  "issue_type": "bug",
+  "priority": "high",
+  "severity": "critical",
+  "suggested_labels": ["bug", "priority-high"]
+}
+```
+
+Why this helps:
+- rank issues automatically
+- speed up triage
+- reduce decision fatigue for maintainers
+
 Validation rules enforced by parser:
 
 - `summary` is limited to 40 words
 - title is prefixed by type when missing (for example `Bug:` / `Feature:` / `Docs:`)
+- `priority` and `severity` are normalized to one of: `critical`, `high`, `medium`, `low`
+- if `priority` is invalid or missing, it is derived from `severity`
 - for `ui_ux`, `design_reference` defaults to `none` when no explicit reference is provided
 - `missing_information` is deduplicated and capped at 8 items
-- `suggested_labels` is normalized to lowercase kebab-case, deduplicated, and capped at 5 items
+- `suggested_labels` is normalized to lowercase kebab-case, deduplicated, capped at 5 items, and includes `priority-<level>`
 
 ---
 

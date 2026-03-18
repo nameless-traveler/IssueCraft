@@ -10,6 +10,8 @@ const config = require('../utils/config');
  *
  * @param {{
  *   issue_type: string,
+ *   priority: string,
+ *   severity: string,
  *   enhanced_issue: Record<string, string>,
  *   missing_information: string[],
  *   suggested_labels: string[],
@@ -17,7 +19,7 @@ const config = require('../utils/config');
  * @returns {string} Markdown-formatted comment body.
  */
 function formatComment(parsed) {
-  const { issue_type, enhanced_issue, missing_information, suggested_labels } = parsed;
+  const { issue_type, priority, severity, enhanced_issue, missing_information, suggested_labels } = parsed;
   const typeDisplay = formatIssueType(issue_type);
 
   const issueFieldsBlock = buildIssueFieldsBlock(issue_type, enhanced_issue);
@@ -35,6 +37,8 @@ function formatComment(parsed) {
   return `## AI Issue Enhancement
 
 > **Detected Type:** ${typeDisplay}
+> **Priority:** ${capitalise(priority || 'medium')}
+> **Severity:** ${capitalise(severity || 'medium')}
 
 ---
 
