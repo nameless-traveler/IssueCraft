@@ -76,7 +76,12 @@ function parseResponse(rawResponse) {
   parsed.confidence = normaliseConfidence(parsed.confidence);
   parsed.enhanced_issue = normaliseEnhancedIssue(parsed.issue_type, parsed.enhanced_issue);
   parsed.missing_information = normaliseMissingInfo(parsed.missing_information);
-  parsed.suggested_labels = normaliseLabels(parsed.suggested_labels, parsed.priority, parsed.severity);
+  parsed.suggested_labels = normaliseLabels(
+    parsed.suggested_labels,
+    parsed.issue_type,
+    parsed.priority,
+    parsed.severity
+  );
 
   logger.responseReceived(parsed.issue_type);
   return parsed;
@@ -195,15 +200,16 @@ function normaliseMissingInfo(missingInfoRaw) {
   const deduped = dedupeStrings(
     missingInfoRaw
       .filter((item) => typeof item === 'string')
-      .map((item) => item.trim())
+      .map((item) => normaliseMissingInfoItem(item))
       .filter(Boolean)
   );
 
   return deduped.slice(0, MISSING_INFO_MAX_ITEMS);
 }
 
-function normaliseLabels(labelsRaw, priority, severity) {
-  const structuredLabels = [`severity-${severity}`, `priority-${priority}`];
+function normaliseLabels(labelsRaw, issueType, priority, severity) {
+  const typeLabel = issueType.replace(/_/g, '-');
+  const structuredLabels = [typeLabel, `severity-${severity}`, `priority-${priority}`];
 
   if (!Array.isArray(labelsRaw)) {
     logger.warn('"suggested_labels" is not an array, defaulting to []');
@@ -217,13 +223,29 @@ function normaliseLabels(labelsRaw, priority, severity) {
     .map((item) => (SEVERITY_LEVELS.includes(item) ? `severity-${item}` : item))
     .filter(Boolean);
 
-  const deduped = dedupeStrings([...structuredLabels, ...normalized]);
+  const deduped = dedupeStrings([...normalized, ...structuredLabels]);
+  const remaining = deduped.filter(
+    (item) => !structuredLabels.includes(item) && item !== 'needs-info'
+  );
+  const ordered = [
+    ...structuredLabels,
+    ...(deduped.includes('needs-info') ? ['needs-info'] : []),
+    ...remaining,
+  ];
 
-  return deduped.slice(0, LABELS_MAX_ITEMS);
+  return ordered.slice(0, LABELS_MAX_ITEMS);
 }
 
 function dedupeStrings(items) {
   return [...new Set(items)];
+}
+
+function normaliseMissingInfoItem(item) {
+  return item
+    .trim()
+    .replace(/[?]+$/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/^(is|are|do|does|did|can|could|should|would|will|was|were|has|have|had|what|which|when|where|why|how|any)\s+/i, '');
 }
 
 module.exports = { parseResponse };

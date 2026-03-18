@@ -45,7 +45,7 @@ The upload should start immediately after clicking Upload.
 
 ### Suggested Labels
 
-`severity-critical`  `priority-high`  `bug`  `upload`  `needs-reproduction`
+`bug`  `severity-critical`  `priority-high`  `needs-reproduction`  `upload`
 
 ---
 
@@ -77,11 +77,11 @@ The upload should start immediately after clicking Upload.
     "console or network errors"
   ],
   "suggested_labels": [
+    "bug",
     "severity-critical",
     "priority-high",
-    "bug",
-    "upload",
-    "needs-reproduction"
+    "needs-reproduction",
+    "upload"
   ]
 }
 ```

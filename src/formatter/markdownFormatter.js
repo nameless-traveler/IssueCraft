@@ -84,7 +84,7 @@ function buildIssueFieldsBlock(issueType, enhancedIssue) {
 
   const fields = fieldOrderByType[issueType] || fieldOrderByType.other;
   return fields
-    .map((field) => `**${formatFieldLabel(field)}**\n${enhancedIssue[field] || 'Not specified'}`)
+    .map((field) => `**${formatFieldLabel(field)}**\n${formatFieldValue(field, enhancedIssue[field])}`)
     .join('\n\n');
 }
 
@@ -110,6 +110,30 @@ function formatIssueType(type) {
 
 function capitalise(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function formatFieldValue(field, value) {
+  const safeValue = String(value || 'Not specified').trim() || 'Not specified';
+  if (field !== 'steps_to_reproduce') return safeValue;
+  return formatSteps(safeValue);
+}
+
+function formatSteps(steps) {
+  if (steps.toLowerCase() === 'not specified') return steps;
+
+  const candidates = steps
+    .split(/[\r\n]+|,\s*/)
+    .map((step) => step.trim())
+    .map((step) => step.replace(/^[-*]\s+/, ''))
+    .map((step) => step.replace(/^\d+[.)]\s+/, ''))
+    .map((step) => step.replace(/[;,]+$/g, '').trim())
+    .filter(Boolean);
+
+  if (candidates.length < 2) return steps;
+
+  return candidates
+    .map((step, index) => `${index + 1}. ${step}`)
+    .join('\n');
 }
 
 module.exports = { formatComment };

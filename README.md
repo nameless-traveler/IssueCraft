@@ -247,7 +247,7 @@ Example output:
   "priority_reason": "Blocks upload flow for most active users",
   "severity": "critical",
   "confidence": "medium",
-  "suggested_labels": ["bug", "severity-critical", "priority-high"]
+  "suggested_labels": ["bug", "severity-critical", "priority-high", "needs-info"]
 }
 ```
 
@@ -265,8 +265,8 @@ Validation rules enforced by parser:
 - if `priority` is invalid or missing, it is derived from `severity`
 - `confidence` is normalized to one of: `high`, `medium`, `low`
 - for `ui_ux`, `design_reference` defaults to `none` when no explicit reference is provided
-- `missing_information` is deduplicated and capped at 8 items
-- `suggested_labels` is normalized to lowercase kebab-case, deduplicated, capped at 5 items, and includes `severity-<level>` and `priority-<level>`
+- `missing_information` is deduplicated, capped at 8 items, and normalized away from question-style phrasing
+- `suggested_labels` is normalized to lowercase kebab-case, deduplicated, capped at 5 items, includes `severity-<level>` and `priority-<level>`, and is ordered as: issue type, severity, priority, `needs-info`, then remaining labels
 
 ---
 

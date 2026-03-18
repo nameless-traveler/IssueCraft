@@ -94,6 +94,8 @@ Required fields in `enhanced_issue`:
 - Prefix title with issue type when appropriate.
 - Example prefixes: `Bug:`, `Feature:`, `Docs:`.
 - Summary must be concise and no more than 40 words.
+- Avoid repeating the same phrasing across `summary` and `observed_behavior`.
+- Do not assume downstream system behavior unless explicitly stated in the issue.
 - Do not echo the full input issue text in the output.
 
 ## Priority Logic
@@ -130,6 +132,7 @@ Identify debugging details not provided but useful for investigation.
 - Return 0 to 8 concise items.
 - Avoid duplicates.
 - Prioritize context-specific missing info over generic suggestions.
+- Use concise noun phrases, not question-style sentences.
 
 Examples:
 - OS or platform
@@ -144,6 +147,7 @@ Suggest relevant GitHub labels.
 - Return 1 to 5 labels when possible.
 - Labels must be lowercase, kebab-case, and unique.
 - Use structured labels when applicable: `severity-<level>` and `priority-<level>`.
+- Prefer label order: issue-type label, `severity-<level>`, `priority-<level>`, `needs-info`, then other contextual labels.
 - Return `[]` if no labels are appropriate.
 
 Examples:
