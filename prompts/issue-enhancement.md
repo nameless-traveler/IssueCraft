@@ -28,6 +28,8 @@ Required fields in `enhanced_issue`:
 - `steps_to_reproduce`
 - `observed_behavior`
 - `expected_behavior`
+For `steps_to_reproduce`, if steps are partially implied by the issue, convert them into minimal safe steps.
+Use `Not specified` only when no actionable steps can be inferred.
 
 ### Feature Request Template
 Use when `issue_type = feature_request`.
@@ -127,6 +129,7 @@ Return `priority_reason` as a very short one-line reason for the selected priori
 Identify debugging details not provided but useful for investigation.
 - Return 0 to 8 concise items.
 - Avoid duplicates.
+- Prioritize context-specific missing info over generic suggestions.
 
 Examples:
 - OS or platform
@@ -140,6 +143,7 @@ Examples:
 Suggest relevant GitHub labels.
 - Return 1 to 5 labels when possible.
 - Labels must be lowercase, kebab-case, and unique.
+- Use structured labels when applicable: `severity-<level>` and `priority-<level>`.
 - Return `[]` if no labels are appropriate.
 
 Examples:

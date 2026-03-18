@@ -76,7 +76,7 @@ function parseResponse(rawResponse) {
   parsed.confidence = normaliseConfidence(parsed.confidence);
   parsed.enhanced_issue = normaliseEnhancedIssue(parsed.issue_type, parsed.enhanced_issue);
   parsed.missing_information = normaliseMissingInfo(parsed.missing_information);
-  parsed.suggested_labels = normaliseLabels(parsed.suggested_labels, parsed.priority);
+  parsed.suggested_labels = normaliseLabels(parsed.suggested_labels, parsed.priority, parsed.severity);
 
   logger.responseReceived(parsed.issue_type);
   return parsed;
@@ -202,23 +202,22 @@ function normaliseMissingInfo(missingInfoRaw) {
   return deduped.slice(0, MISSING_INFO_MAX_ITEMS);
 }
 
-function normaliseLabels(labelsRaw, priority) {
+function normaliseLabels(labelsRaw, priority, severity) {
+  const structuredLabels = [`severity-${severity}`, `priority-${priority}`];
+
   if (!Array.isArray(labelsRaw)) {
     logger.warn('"suggested_labels" is not an array, defaulting to []');
-    return [`priority-${priority}`];
+    return structuredLabels;
   }
 
   const normalized = labelsRaw
     .filter((item) => typeof item === 'string')
     .map((item) => item.trim().toLowerCase().replace(/\s+/g, '-'))
     .map((item) => item.replace(/[^a-z0-9-]/g, ''))
+    .map((item) => (SEVERITY_LEVELS.includes(item) ? `severity-${item}` : item))
     .filter(Boolean);
 
-  normalized.push(`priority-${priority}`);
-
-  const deduped = dedupeStrings(
-    normalized
-  );
+  const deduped = dedupeStrings([...structuredLabels, ...normalized]);
 
   return deduped.slice(0, LABELS_MAX_ITEMS);
 }
