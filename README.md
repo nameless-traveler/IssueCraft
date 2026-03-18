@@ -97,20 +97,20 @@ jobs:
       issues: write
 
     steps:
-      - uses: nameless-traveler/issuecraft@v1
+      - uses: nameless-traveler/issuecraft@v2
         with:
           ai-provider: openai
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 ```
 
-`@v1` always points to the latest stable v1 release.
-Pin to `@v1.0.0` if you need a fixed build.
+`@v2` always points to the latest stable v2 release.
+Pin to `@v2.0.0` if you need a fixed build.
 
 If you see a warning like:
 `Unexpected input(s) 'gemini-retry-attempts', 'gemini-retry-delay-ms'`
 your workflow is using an older action release where those inputs do not exist yet.
-Use a release/tag that includes the new `action.yml` inputs, or repoint the `v1` tag to the latest release.
+Use a release/tag that includes the new `action.yml` inputs, or repoint the `v2` tag to the latest release.
 
 IssueCraft accepts provider and credentials from workflow `with` inputs and environment variables.
 
@@ -142,7 +142,7 @@ jobs:
       issues: write
 
     steps:
-      - uses: nameless-traveler/issuecraft@v1
+      - uses: nameless-traveler/issuecraft@v2
         with:
           ai-provider: gemini
           gemini-retry-attempts: 5
@@ -191,7 +191,7 @@ Settings are defined in [`src/utils/config.js`](./src/utils/config.js).
 | `gemini.retryAttempts` | `3` | Retry attempts for failed Gemini API calls (override with `GEMINI_RETRY_ATTEMPTS` or input `gemini-retry-attempts`) |
 | `gemini.retryDelayMs` | `1500` | Base delay for retry backoff in ms (override with `GEMINI_RETRY_DELAY_MS` or input `gemini-retry-delay-ms`) |
 | `gemini.timeoutMs` | `15000` | Request timeout for Gemini API calls in ms |
-| `prompt.version` | `1.0.0` | Version shown in comment footer |
+| `prompt.version` | `2.0.0` | Version shown in comment footer |
 
 Use `LOG_LEVEL=debug` for verbose logs.
 Defaults in this table are baseline values; workflow examples may intentionally override them (for example `gemini-retry-attempts: 5`).
@@ -289,7 +289,7 @@ It does not:
 For reproducible builds, pin a fixed tag:
 
 ```yaml
-- uses: nameless-traveler/issuecraft@v1.0.0
+- uses: nameless-traveler/issuecraft@v2.0.0
 ```
 
 ---
@@ -329,7 +329,7 @@ issuecraft/
 
 ---
 
-IssueCraft is currently in its first release and will continue evolving as improvements are added.
+IssueCraft is currently in its v2 release and will continue evolving as improvements are added.
 
 ---
 
