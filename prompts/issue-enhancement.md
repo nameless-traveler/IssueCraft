@@ -73,6 +73,7 @@ Required fields in `enhanced_issue`:
 - `expected_experience`
 - `user_impact`
 - `design_reference`
+For `design_reference`, if no explicit design reference is provided in the issue, set it to `none`.
 
 ### Default Template
 Use when `issue_type = other`.

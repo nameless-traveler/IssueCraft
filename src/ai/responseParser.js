@@ -97,11 +97,14 @@ function normaliseEnhancedIssue(issueType, enhancedIssueRaw) {
   const result = {};
 
   for (const field of requiredFields) {
+    const isUiUxDesignReference = issueType === 'ui_ux' && field === 'design_reference';
+    const defaultValue = isUiUxDesignReference ? 'none' : 'Not specified';
+
     if (!(field in enhancedIssueRaw)) {
-      logger.warn(`enhanced_issue is missing field "${field}", defaulting to "Not specified"`);
-      result[field] = 'Not specified';
+      logger.warn(`enhanced_issue is missing field "${field}", defaulting to "${defaultValue}"`);
+      result[field] = defaultValue;
     } else {
-      result[field] = String(enhancedIssueRaw[field] || 'Not specified').trim() || 'Not specified';
+      result[field] = String(enhancedIssueRaw[field] || defaultValue).trim() || defaultValue;
     }
   }
 

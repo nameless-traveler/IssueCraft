@@ -224,6 +224,7 @@ Validation rules enforced by parser:
 
 - `summary` is limited to 40 words
 - title is prefixed by type when missing (for example `Bug:` / `Feature:` / `Docs:`)
+- for `ui_ux`, `design_reference` defaults to `none` when no explicit reference is provided
 - `missing_information` is deduplicated and capped at 8 items
 - `suggested_labels` is normalized to lowercase kebab-case, deduplicated, and capped at 5 items
 
