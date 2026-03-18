@@ -129,11 +129,16 @@ function formatSteps(steps) {
     .map((step) => step.replace(/[;,]+$/g, '').trim())
     .filter(Boolean);
 
-  if (candidates.length < 2) return steps;
+  const actionableCandidates = candidates.filter((step) => isLikelyActionableStep(step));
+  if (actionableCandidates.length < 2) return steps;
 
-  return candidates
+  return actionableCandidates
     .map((step, index) => `${index + 1}. ${step}`)
     .join('\n');
+}
+
+function isLikelyActionableStep(step) {
+  return /^(open|go|navigate|visit|click|tap|select|choose|enter|type|submit|press|log in|login|upload|download|install|run|refresh|restart|create|update|delete|save)\b/i.test(step);
 }
 
 module.exports = { formatComment };
