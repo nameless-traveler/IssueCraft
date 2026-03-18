@@ -34,8 +34,9 @@ Use when `issue_type = feature_request`.
 Required fields in `enhanced_issue`:
 - `title`
 - `summary`
-- `problem_statement`
-- `proposed_solution`
+- `proposed_feature`
+- `expected_outcome`
+- `expected_impact`
 
 ### Documentation Template
 Use when `issue_type = documentation`.
@@ -54,8 +55,27 @@ Required fields in `enhanced_issue`:
 - `expected_performance`
 - `environment`
 
+### Improvement Template
+Use when `issue_type = improvement`.
+Required fields in `enhanced_issue`:
+- `title`
+- `summary`
+- `current_limitation`
+- `proposed_improvement`
+- `expected_outcome`
+
+### UI/UX Template
+Use when `issue_type = ui_ux`.
+Required fields in `enhanced_issue`:
+- `title`
+- `summary`
+- `current_experience`
+- `expected_experience`
+- `user_impact`
+- `design_reference`
+
 ### Default Template
-Use when `issue_type` is `improvement`, `ui_ux`, or `other`.
+Use when `issue_type = other`.
 Required fields in `enhanced_issue`:
 - `title`
 - `summary`

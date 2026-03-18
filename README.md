@@ -213,10 +213,12 @@ IssueCraft expects this top-level JSON format from the model:
 `enhanced_issue` fields vary by `issue_type`:
 
 - `bug`: `title`, `summary`, `steps_to_reproduce`, `observed_behavior`, `expected_behavior`
-- `feature_request`: `title`, `summary`, `problem_statement`, `proposed_solution`
+- `feature_request`: `title`, `summary`, `proposed_feature`, `expected_outcome`, `expected_impact`
 - `documentation`: `title`, `summary`, `affected_docs`, `suggested_change`
 - `performance`: `title`, `summary`, `current_performance`, `expected_performance`, `environment`
-- `improvement`, `ui_ux`, `other`: `title`, `summary`, `observed_behavior`, `expected_behavior`
+- `improvement`: `title`, `summary`, `current_limitation`, `proposed_improvement`, `expected_outcome`
+- `ui_ux`: `title`, `summary`, `current_experience`, `expected_experience`, `user_impact`, `design_reference`
+- `other`: `title`, `summary`, `observed_behavior`, `expected_behavior`
 
 Validation rules enforced by parser:
 
