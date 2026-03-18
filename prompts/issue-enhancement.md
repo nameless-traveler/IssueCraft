@@ -112,6 +112,17 @@ Severity levels:
 - `medium`
 - `low`
 
+## Confidence
+Return `confidence` to indicate how certain the classification and prioritization are:
+- `high`
+- `medium`
+- `low`
+
+## Priority Reason
+Return `priority_reason` as a very short one-line reason for the selected priority.
+- Keep it concise and specific.
+- Do not exceed 12 words.
+
 ## Missing Information
 Identify debugging details not provided but useful for investigation.
 - Return 0 to 8 concise items.
@@ -153,7 +164,9 @@ Use this schema:
 {
   "issue_type": "",
   "priority": "",
+  "priority_reason": "",
   "severity": "",
+  "confidence": "",
   "enhanced_issue": {},
   "missing_information": [],
   "suggested_labels": []

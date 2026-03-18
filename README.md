@@ -206,7 +206,9 @@ IssueCraft expects this top-level JSON format from the model:
 {
   "issue_type": "",
   "priority": "",
+  "priority_reason": "",
   "severity": "",
+  "confidence": "",
   "enhanced_issue": {},
   "missing_information": [],
   "suggested_labels": []
@@ -242,7 +244,9 @@ Example output:
 {
   "issue_type": "bug",
   "priority": "high",
+  "priority_reason": "Blocks upload flow for most active users",
   "severity": "critical",
+  "confidence": "medium",
   "suggested_labels": ["bug", "priority-high"]
 }
 ```
@@ -255,9 +259,11 @@ Why this helps:
 Validation rules enforced by parser:
 
 - `summary` is limited to 40 words
+- `priority_reason` is normalized to a single line and capped at 12 words
 - title is prefixed by type when missing (for example `Bug:` / `Feature:` / `Docs:`)
 - `priority` and `severity` are normalized to one of: `critical`, `high`, `medium`, `low`
 - if `priority` is invalid or missing, it is derived from `severity`
+- `confidence` is normalized to one of: `high`, `medium`, `low`
 - for `ui_ux`, `design_reference` defaults to `none` when no explicit reference is provided
 - `missing_information` is deduplicated and capped at 8 items
 - `suggested_labels` is normalized to lowercase kebab-case, deduplicated, capped at 5 items, and includes `priority-<level>`

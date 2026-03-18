@@ -32,10 +32,12 @@ const TITLE_PREFIX = {
 };
 
 const SUMMARY_MAX_WORDS = 40;
+const PRIORITY_REASON_MAX_WORDS = 12;
 const MISSING_INFO_MAX_ITEMS = 8;
 const LABELS_MAX_ITEMS = 5;
 const PRIORITY_LEVELS = ['critical', 'high', 'medium', 'low'];
 const SEVERITY_LEVELS = ['critical', 'high', 'medium', 'low'];
+const CONFIDENCE_LEVELS = ['high', 'medium', 'low'];
 
 /**
  * Parses the raw AI response string into a validated JS object.
@@ -44,7 +46,9 @@ const SEVERITY_LEVELS = ['critical', 'high', 'medium', 'low'];
  * @returns {{
  *   issue_type: string,
  *   priority: string,
+ *   priority_reason: string,
  *   severity: string,
+ *   confidence: string,
  *   enhanced_issue: Record<string, string>,
  *   missing_information: string[],
  *   suggested_labels: string[],
@@ -68,6 +72,8 @@ function parseResponse(rawResponse) {
   parsed.issue_type = normaliseIssueType(parsed.issue_type);
   parsed.severity = normaliseSeverity(parsed.severity);
   parsed.priority = normalisePriority(parsed.priority, parsed.severity);
+  parsed.priority_reason = normalisePriorityReason(parsed.priority_reason);
+  parsed.confidence = normaliseConfidence(parsed.confidence);
   parsed.enhanced_issue = normaliseEnhancedIssue(parsed.issue_type, parsed.enhanced_issue);
   parsed.missing_information = normaliseMissingInfo(parsed.missing_information);
   parsed.suggested_labels = normaliseLabels(parsed.suggested_labels, parsed.priority);
@@ -77,7 +83,10 @@ function parseResponse(rawResponse) {
 }
 
 function validateTopLevel(parsed) {
-  const topLevelKeys = ['issue_type', 'priority', 'severity', 'enhanced_issue', 'missing_information', 'suggested_labels'];
+  const topLevelKeys = [
+    'issue_type', 'priority', 'priority_reason', 'severity', 'confidence',
+    'enhanced_issue', 'missing_information', 'suggested_labels',
+  ];
   for (const key of topLevelKeys) {
     if (!(key in parsed)) {
       throw new Error(`AI response is missing required top-level field: "${key}"`);
@@ -101,6 +110,20 @@ function normalisePriority(priorityRaw, severity) {
     return severity;
   }
   return priority;
+}
+
+function normalisePriorityReason(reasonRaw) {
+  const safeReason = String(reasonRaw || '').replace(/\s+/g, ' ').trim() || 'Not specified';
+  return ensureSummaryLength(safeReason, PRIORITY_REASON_MAX_WORDS);
+}
+
+function normaliseConfidence(confidenceRaw) {
+  const confidence = String(confidenceRaw || '').trim().toLowerCase();
+  if (!CONFIDENCE_LEVELS.includes(confidence)) {
+    logger.warn('Unrecognised confidence, defaulting to "medium"', { received: confidence });
+    return 'medium';
+  }
+  return confidence;
 }
 
 function normaliseIssueType(issueTypeRaw) {
