@@ -56,7 +56,10 @@ The action does not modify the original issue. It only adds a comment.
 > `bug` `upload`
 
 See [`examples/`](./examples) for complete sample input/output.
-Latest output from the current IssueCraft version: [Issue #4 (PDF)](./assets/latest-version-output-issue-4.pdf)
+Latest output from the current IssueCraft version:
+
+![Latest IssueCraft output preview](./assets/latest-version-output-issue-4.jpg)
+
 For real before/after examples across versions, check the enhanced issues here: [scratchpad_gemini issues](https://github.com/nameless-traveler/scratchpad_gemini/issues).
 
 ---
