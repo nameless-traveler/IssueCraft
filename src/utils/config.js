@@ -1,8 +1,10 @@
-﻿/**
+/**
  * config.js
  * Central configuration for IssueCraft.
  * All tuneable parameters live here; import this instead of hardcoding values.
  */
+
+const path = require('path');
 
 function readInputOrEnv(inputName, envName) {
   const inputKeyLegacy = `INPUT_${inputName}`;
@@ -18,6 +20,32 @@ function readNumberInputOrEnv(inputName, envName, defaultValue) {
   const value = Number(raw);
   return Number.isFinite(value) ? value : defaultValue;
 }
+
+function getPackageVersion() {
+  try {
+    const pkg = require(path.join(__dirname, '..', '..', 'package.json'));
+    return String(pkg.version || '').trim() || 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
+function normaliseActionRef(ref) {
+  if (!ref) return '';
+  return String(ref).trim().replace(/^refs\/tags\//, '');
+}
+
+function resolveRuntimeVersion() {
+  const explicit = readInputOrEnv('ISSUECRAFT-VERSION', 'ISSUECRAFT_VERSION');
+  if (explicit) return String(explicit).trim();
+
+  const actionRef = normaliseActionRef(process.env.GITHUB_ACTION_REF);
+  if (actionRef) return actionRef;
+
+  return getPackageVersion();
+}
+
+const runtimeVersion = resolveRuntimeVersion();
 
 const config = {
   ai: {
@@ -46,8 +74,12 @@ const config = {
   },
 
   prompt: {
-    version: '2.0.0',
+    version: runtimeVersion,
     templatePath: 'prompts/issue-enhancement.md',
+  },
+
+  app: {
+    version: runtimeVersion,
   },
 
   github: {

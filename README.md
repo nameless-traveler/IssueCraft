@@ -193,7 +193,7 @@ Settings are defined in [`src/utils/config.js`](./src/utils/config.js).
 | `gemini.retryAttempts` | `3` | Retry attempts for failed Gemini API calls (override with `GEMINI_RETRY_ATTEMPTS` or input `gemini-retry-attempts`) |
 | `gemini.retryDelayMs` | `1500` | Base delay for retry backoff in ms (override with `GEMINI_RETRY_DELAY_MS` or input `gemini-retry-delay-ms`) |
 | `gemini.timeoutMs` | `15000` | Request timeout for Gemini API calls in ms |
-| `prompt.version` | `2.0.0` | Version shown in comment footer |
+| `prompt.version` | action ref or package version | Version shown in comment footer (resolved from `ISSUECRAFT_VERSION`, then `GITHUB_ACTION_REF`, then `package.json`) |
 
 Use `LOG_LEVEL=debug` for verbose logs.
 Defaults in this table are baseline values; workflow examples may intentionally override them (for example `gemini-retry-attempts: 5`).

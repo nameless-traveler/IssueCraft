@@ -53,7 +53,7 @@ function makeRequest(path, body, token) {
         'Content-Length': Buffer.byteLength(body),
         'Authorization':  `Bearer ${token}`,
         'Accept':         'application/vnd.github+json',
-        'User-Agent':     'issuecraft/2.0.0',
+        'User-Agent':     `issuecraft/${config.app.version}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
     };
