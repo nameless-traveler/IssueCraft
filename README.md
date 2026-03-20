@@ -273,6 +273,28 @@ Validation rules enforced by parser:
 - `missing_information` is deduplicated, capped at 8 items, and normalized away from question-style phrasing
 - `suggested_labels` is normalized to lowercase kebab-case, deduplicated, capped at 5 items, includes `severity-<level>` and `priority-<level>`, and is ordered as: issue type, severity, priority, `needs-info`, then remaining labels
 
+<details>
+<summary><strong>Want To Add Your Own Template?</strong></summary>
+
+### Custom Template Workflow
+
+1. Fork this repository.
+2. Update or add templates in [`prompts/issue-enhancement.md`](./prompts/issue-enhancement.md).
+3. If you add/remove required fields, also update:
+   - [`src/ai/responseParser.js`](./src/ai/responseParser.js)
+   - [`src/formatter/markdownFormatter.js`](./src/formatter/markdownFormatter.js)
+4. Run tests in your fork:
+   - `npm test`
+5. Create and push a tag in your fork (for example `v2-custom.1`).
+6. Use your forked action in your target repository workflow:
+
+```yaml
+- uses: <your-user-or-org>/issuecraft@v2-custom.1
+```
+
+Tip: If you only change wording in templates (without changing required fields), updating the prompt file is usually enough.
+</details>
+
 ---
 
 ## Security & Privacy
